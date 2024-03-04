@@ -1,6 +1,7 @@
 // const { create, login } = require("../../core/services/user");
 const userServices = require("../../core/services/user/user.js");
 const cookie = require("cookie-parser");
+const ApiResponse = require('../../utils/ApiResponse.js')
 
 const createErrorMessage = () => {
   return {
@@ -13,15 +14,17 @@ const createErrorMessage = () => {
 
 async function createUser(req, res) {
   try {
-    // console.log("Controller",req)
-    // let response = await userServices.create(req.body);
-    return res.status(200).send(req.body);
+    console.log("Controller",req.body)
+    let response = await userServices.create(req.body);
+    return res.status(201).json(
+      new ApiResponse(200, response, "User registered Successfully")
+  )
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     let newError = createErrorMessage();
-    newError.status = statusCode.internalServerError;
+    newError.status = 500;
     newError.message = "User Control Service Internal Server Error";
-    return res.status(statusCode).send(newError);
+    return res.send(newError);
   }
 }
 

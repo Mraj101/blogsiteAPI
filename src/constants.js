@@ -1,2 +1,2 @@
-const dbName="production";
+const dbName="BlogsAPI";
 module.exports = {dbName}

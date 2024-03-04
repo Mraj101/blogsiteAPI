@@ -1,83 +1,60 @@
 const TOKENS = require("./helperfuncitons/tokens.js");
+const userModels = require('../../../models/user.models.js');
 // const Cryptography = require("./helperfuncitons/Cryptography");
-
-
+const {ApiError} = require('../../../utils/ApiError.js');
 const bcrypt = require("bcrypt");
 
 
 //sigup user services
 async function create(data) {
   try {
-    const { email, password, name } = data;
-
+    console.log(data,'data adsf');
+    const { username, email, fullName, password } = data;
     //checking if the feilds are empty
     if (
-      [email, password, name].some((feild) => {
+      [username, email, fullName, password].some((feild) => {
         feild?.trim() === "";
       })
     ) {
-      return {
-        data: null,
-        message: "all the feilds need to filled",
-        error: true,
-        status: statusCode.internalServerError,
-      };
+     throw new ApiError(404,"all feilds must be filled")
     }
 
-    const existsEmail = await db
-      .collection("user")
-      .findOne({ email: data.email });
+    const existsEmail = await userModels.findOne({email});
+    // console.log(existsEmail,'email');
 
-    // const a = await db
-    // .collection("user")
-    // .findOne({ $or:[{ name: data.name } , {email: data.email} ] })
-
-    // console.log(a,"my a");
-
-    if (existsEmail.data.email) {
-      return {
-        data: null,
-        message: "Duplicate Data",
-        error: true,
-        status: statusCode.internalServerError,
-      };
+    if (existsEmail) {
+      throw new ApiError(409, "User with email or username already exists")
     }
-
+    console.log('hi exist');
+    
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    this.data = {
-      ...data,
-      password: hash,
-    };
+    const user = await userModels.create({
+      fullName,
+      email, 
+      password:hash,
+      username: username.toLowerCase()
+  })
 
-    // console.log('before data saved')
-    let savedData = await db.collection("user").insert(this.data);
-    // console.log('after data saved')
-    if (!savedData) {
-      return {
-        data: null,
-        statusCode: statusCode.internalServerError,
-        error: true,
-        message: "something went wrong wile saving user data",
-      };
+    if (!user) {
+      throw new ApiError(500, "someting went wrong while registering user")
     }
-    // console.log(savedData,"data we have saved");
+    console.log(user,"user we have saved");
 
     // console.log('before encrypting payload')
 
     const payLoad = {
-      email: savedData.data.email,
-      name: savedData.data.name,
+      email: user.email,
+      name: user.username,
     };
-    console.log(payLoad);
+    console.log(payLoad,"pay");
     return payLoad;
   } catch (err) {
     return {
       data: null,
-      statusCode: statusCode.internalServerError,
       error: true,
-      message: "something went wrong while login",
+      message: "something went wrong while registering",
     };
   }
 }
@@ -89,6 +66,7 @@ async function create(data) {
 //access refresh token
 //send cookies
 //send back the response.
+
 async function login(data) {
   try {
     console.log(data, "data or not?");

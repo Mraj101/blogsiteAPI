@@ -1,7 +1,6 @@
-import mongoose, {Schema} from "mongoose";
+const mongoose = require('mongoose');
 
-
-const userSchema = new Schema(
+const userSchema = new mongoose.Schema(
     {
         username: {
             type: String,
@@ -15,7 +14,7 @@ const userSchema = new Schema(
             type: String,
             required: true,
             unique: true,
-            lowecase: true,
+            lowercase: true,
             trim: true, 
         },
         fullName: {
@@ -24,18 +23,6 @@ const userSchema = new Schema(
             trim: true, 
             index: true
         },
-        avatar: {
-            type: String, // cloudinary url
-            required: true,
-        },
-        coverImage: {
-            type: String, // cloudinary url
-        },
-        watchHistory: [
-            {
-                type: Schema.Types.ObjectId,
-            }
-        ],
         password: {
             type: String,
             required: [true, 'Password is required']
