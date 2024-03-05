@@ -1,46 +1,47 @@
 const TOKENS = require("./helperfuncitons/tokens.js");
-const userModels = require('../../../models/user.models.js');
+const userModels = require("../../../models/user.models.js");
 // const Cryptography = require("./helperfuncitons/Cryptography");
-const {ApiError} = require('../../../utils/ApiError.js');
+const { ApiError } = require("../../../utils/ApiError.js");
 const bcrypt = require("bcrypt");
-
 
 //sigup user services
 async function create(data) {
   try {
-    console.log(data,'data adsf');
     const { username, email, fullName, password } = data;
+    console.log(username, email, fullName, password, "data adsf");
     //checking if the feilds are empty
     if (
-      [username, email, fullName, password].some((feild) => {
-        feild?.trim() === "";
-      })
+      [username, email, fullName, password].some(
+        (feild) => feild?.trim() === ""
+      )
     ) {
-     throw new ApiError(404,"all feilds must be filled")
+      // console.log("no error why?");
+      throw new ApiError(404, "all feilds must be filled");
     }
 
-    const existsEmail = await userModels.findOne({email});
+    const existsEmail = await userModels.findOne({ email });
     // console.log(existsEmail,'email');
 
     if (existsEmail) {
-      throw new ApiError(409, "User with email or username already exists")
+      throw new ApiError(409, "User with email or username already exists");
     }
-    console.log('hi exist');
-    
+    console.log("hi exist");
+
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
     const user = await userModels.create({
       fullName,
-      email, 
-      password:hash,
-      username: username.toLowerCase()
-  })
+      email,
+      password: hash,
+      username: username.toLowerCase(),
+    });
 
     if (!user) {
-      throw new ApiError(500, "someting went wrong while registering user")
+      throw new ApiError(500, "could not create user");
     }
-    console.log(user,"user we have saved");
+
+    // console.log(user,"user we have saved");
 
     // console.log('before encrypting payload')
 
@@ -48,14 +49,14 @@ async function create(data) {
       email: user.email,
       name: user.username,
     };
-    console.log(payLoad,"pay");
+    console.log(payLoad, "pay");
     return payLoad;
   } catch (err) {
-    return {
-      data: null,
-      error: true,
-      message: "something went wrong while registering",
-    };
+    if (err instanceof ApiError) {
+      throw err; // Re-throw the ApiError
+    } else {
+      throw new ApiError(500, "Service not available");
+    }
   }
 }
 
@@ -69,54 +70,44 @@ async function create(data) {
 
 async function login(data) {
   try {
-    console.log(data, "data or not?");
+    // console.log(data, "data or not?");
     const { email, password } = data;
-    if (!(email || password)) {
-      return {
-        data: null,
-        message: "all feilds need to be filled",
-        error: true,
-        status: statusCode.internalServerError,
-      };
+    if ([email,password].some((feild)=>feild?.trim()==="")) {
+      throw new ApiError(400, "user name or email required");
+    }
+    // console.log(email,password,"print");
+    const user = await userModels.findOne({ email });
+    // console.log(user, "hit or not");
+    if (!user) {
+      throw new ApiError(404, "user not found");
     }
 
-    const user = await db.collection("user").findOne({ email });
-    // console.log(user, "hit or not");
-
-    const match = await bcrypt.compare(password, user.data.password);
+    const match = await bcrypt.compare(password, user.password);
     // console.log(match, "match results");
     if (!match) {
-      return {
-        data: null,
-        message: "password did not match",
-        error: true,
-      };
-    }f
+      throw new ApiError(401, "invalid user credential");
+    }
+    //  console.log(email,"with what ")
+    const { accessToken, refreshToken, userInstance } =await TOKENS.generateAccessAndRefreshToknes(email);
+    // console.log(accessToken, "actokens");
+    // console.log(refreshToken, "retokens");
 
-
-   console.log(email,"with waht ")
-  const { accessToken, refreshToken } =
-      await TOKENS.generateAccessAndRefreshToknes(email);
-  
- 
-    
-    // console.log(accessToken, "tokens");
-
-    const loggedinUser = await db.collection("user").findOne({ email });
-    // console.log(loggedinUser, "logged in");
+    console.log(userInstance, "logged in");
 
     let modifiedUser = {
-      name: user.data.name,
-      email: user.data.email,
+      username: userInstance.username,
+      email: userInstance.email,
+      fullName:userInstance.fullName,
       accessToken,
       refreshToken,
     };
+    // console.log(modifiedUser, "modified user");
     const options = {
       httpOnly: true,
       secure: true,
     };
 
-    return {  options, modifiedUser };
+    return { options, modifiedUser };
 
     //encrypting our payload
     //convert the document into string
@@ -134,18 +125,17 @@ async function login(data) {
     // const token = TOKENS.createAccessToken({ encryptedPayload });
     // return { userToken: token };
   } catch (err) {
-    return {
-      data: null,
-      statusCode: statusCode.internalServerError,
-      error: true,
-      message: err.message,
-    };
+   if(err instanceof ApiError){
+    throw err;
+   }else{
+    throw new ApiError(500,"login service not available")
+   }
   }
 }
 
-async function logout(req,res) {
-  console.log('hello logout');
-  const user = await db.collection('user').findOne(req.user.data._id);
+async function logout(req, res) {
+  console.log("hello logout");
+  const user = await db.collection("user").findOne(req.user.data._id);
 }
 
 module.exports = { create, login, logout };
