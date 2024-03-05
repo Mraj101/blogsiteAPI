@@ -3,7 +3,7 @@ const userModels = require("../../../../models/user.models");
 const { ApiError } = require("../../../../utils/ApiError");
 
 function createAccessToken(userPayload) {
-  return jwt.sign({ _id: userPayload }, process.env.ACCESS_TOKEN_SECRET, {
+  return jwt.sign(userPayload, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
   });
 }
