@@ -81,7 +81,6 @@ async function login(data) {
     if (!user) {
       throw new ApiError(404, "user not found");
     }
-
     const match = await bcrypt.compare(password, user.password);
     // console.log(match, "match results");
     if (!match) {
@@ -90,10 +89,8 @@ async function login(data) {
     //  console.log(email,"with what ")
     const { accessToken, refreshToken, userInstance } =await TOKENS.generateAccessAndRefreshToknes(email);
     // console.log(accessToken, "actokens");
-    // console.log(refreshToken, "retokens");
-
-    console.log(userInstance, "logged in");
-
+    // console.log(refreshToken, "retokens")
+    // console.log(userInstance, "logged in");
     let modifiedUser = {
       username: userInstance.username,
       email: userInstance.email,
@@ -134,8 +131,37 @@ async function login(data) {
 }
 
 async function logout(req, res) {
-  console.log("hello logout");
-  const user = await db.collection("user").findOne(req.user.data._id);
+  try {
+    // console.log("hello logout");
+    // console.log("hi req.user",req.user);
+    const user = await userModels.findByIdAndUpdate(
+      req.user._id,
+      {
+          $unset: {
+              refreshToken: 1 // this removes the field from document
+          }
+      },
+      {
+          new: true
+      }
+  )
+    if(!user){
+      throw new ApiError(404,"user not found");
+    }
+    const options={
+      httpOnly:true,
+      secure:true
+    }
+    return {};
+    // console.log(token,'token var in logout service');
+  } catch (error) {
+    if(error instanceof ApiError){
+      throw error;
+    }
+    else{
+      throw new ApiError(500,"logout service internal error")
+    }
+  }
 }
 
 module.exports = { create, login, logout };

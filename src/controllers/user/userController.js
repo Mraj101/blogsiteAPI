@@ -62,8 +62,9 @@ async function loginUser(req, res) {
 async function logoutUser(req, res) {
   try {
     // console.log("Controller",req)
-    // let response = await userServices.logout(req.body);
-    return res.status(200).send(response);
+    let response = await userServices.logout(req);
+    // console.log("logout service response in controller",response)
+    return res.status(201).json(new ApiResponse(201,{},"user logged out successfull"));
   } catch (err) {
     // console.log(err);
     if (err instanceof ApiError) {
