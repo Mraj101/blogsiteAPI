@@ -15,9 +15,10 @@ function createRefreshToken(_id) {
 }
 
 
-async function generateAccessAndRefreshToknes(email) {
+async function generateAccessAndRefreshToknes(data) {
   try {
-    let user = await userModels.findOne({ email }).select("-password -refreshToken").lean();
+    // console.log(data,"abc");
+    let user = await userModels.findOne({ email:data }).select("-password -refreshToken").lean();
     // console.log(user, "inside gen acc ref")
     if(!user){
       throw new ApiError(404,"user not available while creating tokens")
@@ -25,15 +26,17 @@ async function generateAccessAndRefreshToknes(email) {
     const accessToken = createAccessToken(user);
     const refreshToken = createRefreshToken(user._id);
     // console.log(user,"user without refresh token")
-    user={
-      ...user,
-      refreshToken:refreshToken
-    }
+    // user={
+    //   ...user,
+    //   refreshToken:refreshToken
+    // }
     // console.log(user,"user with refresh token")
-    let userInstance = await userModels.findByIdAndUpdate(user._id, user,{new:true}).select("-password -refreshToken");
+    let userInstance = await userModels.findByIdAndUpdate(user._id,{
+      $set:{refreshToken:refreshToken}
+    }).select("-password -refreshToken");
     // console.log(userInstance,"update")
     // console.log("inside gen");
-    // console.log(refreshToken);
+    console.log(refreshToken,'ref tok in gen acc ref');
     // console.log(accessToken);
     return { accessToken, refreshToken, userInstance};
   } catch (err) {
