@@ -124,4 +124,23 @@ async function refreshAccessToken(req, res) {
   }
 }
 
-module.exports = { createUser, loginUser, logoutUser, refreshAccessToken };
+
+async function changeCurrentPassword(req, res) {
+  try {
+    console.log(" inside change password controller ");
+    const response = await userServices.changePassword(req);
+    // console.log("after tokern refresh service");
+    return res.status(200).json(new ApiResponse(200, response, "Password changed successfully"));
+  } catch (error) {
+    if (error instanceof ApiError)
+      return new ApiResponse(error.statusCode, null, error.message);
+    else
+      return new ApiResponse(
+        500,
+        null,
+        "internal refreshAccess token server error"
+      );
+  }
+}
+
+module.exports = { createUser, loginUser, logoutUser, refreshAccessToken, changeCurrentPassword };
