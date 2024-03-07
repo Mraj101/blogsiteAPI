@@ -5,7 +5,6 @@ const { ApiError } = require("../../../utils/ApiError.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-
 //declaring global options
 const options = {
   httpOnly: true,
@@ -76,8 +75,6 @@ async function create(data) {
 //send cookies
 //send back the response.
 
-
-
 async function login(data) {
   try {
     // console.log(data, "data or not?");
@@ -100,7 +97,7 @@ async function login(data) {
     const { accessToken, refreshToken, userInstance } =
       await TOKENS.generateAccessAndRefreshToknes(email);
     // console.log(accessToken, "actokens");
-    console.log(refreshToken, "retokens")
+    console.log(refreshToken, "retokens");
     // console.log(userInstance, "logged in");
     let modifiedUser = {
       ...userInstance,
@@ -108,7 +105,6 @@ async function login(data) {
       refreshToken,
     };
     // console.log(modifiedUser, "modified user");
-    
 
     return { options, modifiedUser };
 
@@ -135,7 +131,6 @@ async function login(data) {
     }
   }
 }
-
 
 async function logout(req, res) {
   try {
@@ -166,7 +161,6 @@ async function logout(req, res) {
   }
 }
 
-
 async function tokenRefresh(req) {
   // console.log(" inside refresh service ");
   const incomingRefreshToken =
@@ -181,7 +175,7 @@ async function tokenRefresh(req) {
     );
     // console.log(decodedToken, "token decoded");
     const user = await userModels.findById(decodedToken?._id);
-    console.log(user,"user fetch by token id");
+    console.log(user, "user fetch by token id");
     if (!user) {
       throw new ApiError(401, "Invalid refresh token");
     }
@@ -193,12 +187,36 @@ async function tokenRefresh(req) {
     }
 
     // console.log("if i have user .id or not",user);
-    const { accessToken, refreshToken } = await TOKENS.generateAccessAndRefreshToknes(user.email);
-    console.log("no refresh token?")
-    return {accessToken,refreshToken,options}
+    const { accessToken, refreshToken } =
+      await TOKENS.generateAccessAndRefreshToknes(user.email);
+    console.log("no refresh token?");
+    return { accessToken, refreshToken, options };
   } catch (error) {
     throw new ApiError(401, error?.message || "Invalid refresh token");
   }
 }
 
-module.exports = { create, login, logout, tokenRefresh };
+async function changePassword(req) {
+  try {
+      const { oldPassword, newPassword } = req.body;
+
+      const user = await userModels.findById(req.user?._id);
+      const match = await bcrypt.compare(oldPassword, user.password);
+      if (!match) {
+        throw new ApiError(400, "Invalid old password");
+      }
+
+      user.password = newPassword;
+      await user.save({ validateBeforeSave: false });
+
+      return {}
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    } else {
+      throw new ApiError(401, error?.message || "Invalid refresh token");
+    }
+  }
+}
+
+module.exports = { create, login, logout, tokenRefresh, changePassword };
