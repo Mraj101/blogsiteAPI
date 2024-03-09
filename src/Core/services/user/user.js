@@ -79,7 +79,7 @@ async function login(data) {
   try {
     // console.log(data, "data or not?");
     const { email, password } = data;
-    if ([email, password].some((feild) => feild?.trim() === "")) {
+    if ([email, password].some((feild) => feild?.trim() === "")){
       throw new ApiError(400, "user name or email required");
     }
     // console.log(email,password,"print");
@@ -97,7 +97,7 @@ async function login(data) {
     const { accessToken, refreshToken, userInstance } =
       await TOKENS.generateAccessAndRefreshToknes(email);
     // console.log(accessToken, "actokens");
-    console.log(refreshToken, "retokens");
+    // console.log(refreshToken, "retokens");
     // console.log(userInstance, "logged in");
     let modifiedUser = {
       ...userInstance,
@@ -187,8 +187,7 @@ async function tokenRefresh(req) {
     }
 
     // console.log("if i have user .id or not",user);
-    const { accessToken, refreshToken } =
-      await TOKENS.generateAccessAndRefreshToknes(user.email);
+    const { accessToken, refreshToken } = await TOKENS.generateAccessAndRefreshToknes(user.email);
     console.log("no refresh token?");
     return { accessToken, refreshToken, options };
   } catch (error) {
@@ -198,9 +197,12 @@ async function tokenRefresh(req) {
 
 async function changePassword(req) {
   try {
+      console.log("pass change service");
       const { oldPassword, newPassword } = req.body;
-
+      console.log("body",req.body);
+      console.log(req)
       const user = await userModels.findById(req.user?._id);
+      console.log("pass change service",user);
       const match = await bcrypt.compare(oldPassword, user.password);
       if (!match) {
         throw new ApiError(400, "Invalid old password");
