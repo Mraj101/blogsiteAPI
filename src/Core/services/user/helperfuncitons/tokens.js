@@ -33,10 +33,10 @@ async function generateAccessAndRefreshToknes(data) {
     // console.log(user,"user with refresh token")
     let userInstance = await userModels.findByIdAndUpdate(user._id,{
       $set:{refreshToken:refreshToken}
-    }).select("-password -refreshToken");
-    // console.log(userInstance,"update")
+    }).select("-password -refreshToken").lean();
+    // console.log(userInstance,"user instance")
     // console.log("inside gen");
-    console.log(refreshToken,'ref tok in gen acc ref');
+    // console.log(refreshToken,'ref tok in gen acc ref');
     // console.log(accessToken);
     return { accessToken, refreshToken, userInstance};
   } catch (err) {

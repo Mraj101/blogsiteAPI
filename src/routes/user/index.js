@@ -5,12 +5,14 @@ const {
     createUser,
     loginUser,
     logoutUser,
-    refreshAccessToken
+    refreshAccessToken,
+    changeCurrentPassword
 }=require('../../controllers/user/userController.js')
 
 router.post("/crt", createUser);
 router.post("/login", loginUser);
 router.post("/logout",verifyJWT, logoutUser);
 router.post("/refresh-AccessToken",refreshAccessToken)
+router.post("/changeCurrentPassword",changeCurrentPassword)
 
 module.exports = router
