@@ -4,6 +4,7 @@ const cookie = require("cookie-parser");
 const { ApiResponse } = require("../../utils/ApiResponse.js");
 const { ApiError } = require("../../utils/ApiError.js");
 const cookieParser = require("cookie-parser");
+
 const createErrorMessage = () => {
   return {
     status: "",
@@ -127,7 +128,7 @@ async function refreshAccessToken(req, res) {
 
 async function changeCurrentPassword(req, res) {
   try {
-    console.log(" inside change password controller ");
+    // console.log(" inside change password controller ");
     const response = await userServices.changePassword(req);
     // console.log("after tokern refresh service");
     return res.status(200).json(new ApiResponse(200, response, "Password changed successfully"));
