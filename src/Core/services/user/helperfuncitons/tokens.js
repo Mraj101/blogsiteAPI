@@ -25,6 +25,7 @@ async function generateAccessAndRefreshToknes(data) {
     }
     const accessToken = createAccessToken(user);
     const refreshToken = createRefreshToken(user._id);
+    
     // console.log(user,"user without refresh token")
     // user={
     //   ...user,

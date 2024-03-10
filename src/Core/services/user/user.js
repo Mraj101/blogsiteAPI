@@ -165,6 +165,7 @@ async function tokenRefresh(req) {
   // console.log(" inside refresh service ");
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
+    console.log(req.cookies.refreshToken,"cookies");
   if (!incomingRefreshToken) {
     throw new ApiError(401, "unauthorized request");
   }
@@ -195,7 +196,7 @@ async function tokenRefresh(req) {
   }
 }
 
-async function changePassword(req) {
+async function changePassword(req,res) {
   try {
       console.log("pass change service");
       const { oldPassword, newPassword } = req.body;
@@ -207,8 +208,9 @@ async function changePassword(req) {
       if (!match) {
         throw new ApiError(400, "Invalid old password");
       }
-
-      user.password = newPassword;
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(newPassword,salt);
+      user.password = hash;
       await user.save({ validateBeforeSave: false });
 
       return {}
