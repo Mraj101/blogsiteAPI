@@ -16,8 +16,8 @@ const createErrorMessage = () => {
 
 async function createUser(req, res) {
   try {
-    console.log("Controller", req.body);
-    console.log("hello");
+    // console.log("Controller", req.body);
+    // console.log("hello");
     let response = await userServices.create(req.body);
     return res
       .status(201)

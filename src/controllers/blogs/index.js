@@ -1,4 +1,4 @@
-const blogController = require('./blogControllers')
+const blogController = require('./blogControllers.js')
 
 module.exports = {
     ...blogController,
