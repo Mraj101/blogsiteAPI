@@ -1,5 +1,5 @@
-const blogService = require('./services.blogs')
+const blogServices = require('./services.blogs')
 
 module.exports ={
-    ...blogService
+    ...blogServices
 }

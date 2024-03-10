@@ -1,4 +1,4 @@
-const blogsModels = require("../../../models/blogs.models");
+const commentsModel = require("../../../models/blogs.models");
 const { ApiError } = require("../../../utils/ApiError");
 
 async function create(data){
