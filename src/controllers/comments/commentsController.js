@@ -33,9 +33,9 @@ async function createComments(req, res) {
 
   async function updateComments(req, res) {
     try {
-      console.log("Controller", req.body);
-      console.log("hello");
-      let response = await commentServices.update(req.body);
+      // console.log("Controller", req.body);
+      // console.log("hello");
+      let response = await commentServices.update(req);
       return res
         .status(201)
         .json(new ApiResponse(200, response, "comments updated Successfully"));

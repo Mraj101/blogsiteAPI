@@ -28,17 +28,13 @@ async function create(data) {
 
 async function update(data) {
   try {
-    console.log(data, "comments update");
-
-    // const { comment, } = data;
-    // console.log(comments,"data extract");
-
-    const commentInstance = await commentsModels.findByIdAndUpdate(data);
-
-    // console.log(commentInstance,"commentInstance");
-    // const createdComment = {
-    //   comments: commentInstance.comments,
-    // };
+    const { id } = data.params;
+    console.log(id,'id')
+    const objectData = data.body;
+    // delete objectData._id;
+    console.log(objectData[0], 'obj data')
+    const commentInstance = await commentsModels.findByIdAndUpdate(id, objectData[0], { new: true });
+    console.log(commentInstance,'intnc');
 
     return commentInstance;
   } catch (error) {

@@ -6,7 +6,7 @@ const commentControllers = require('../../controllers/comments/index.js');
 router.post("/crt", commentControllers.createComments
 );
 
-router.post("/update", commentControllers.updateComments
+router.put("/update/:id", commentControllers.updateComments
 );
 router.get("/getComments/:id", commentControllers.getComments
 );
