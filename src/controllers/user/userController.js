@@ -5,14 +5,14 @@ const { ApiResponse } = require("../../utils/ApiResponse.js");
 const { ApiError } = require("../../utils/ApiError.js");
 const cookieParser = require("cookie-parser");
 
-const createErrorMessage = () => {
-  return {
-    status: "",
-    data: null,
-    error: false,
-    message: "",
-  };
-};
+// const createErrorMessage = () => {
+//   return {
+//     status: "",
+//     data: null,
+//     error: false,
+//     message: "",
+//   };
+// };
 
 async function createUser(req, res) {
   try {
@@ -70,6 +70,9 @@ async function loginUser(req, res) {
     // return res.status(statusCode).send(newError);
   }
 }
+
+
+
 
 // abcdefghijklmnopqrstuvwxyz
 async function logoutUser(req, res) {

@@ -1,9 +1,15 @@
 const express = require('express')
 const router = express.Router();
+const commentControllers = require('../../controllers/comments/index.js');
 
-const commentController = require('./')
 
-// router.post("/crt", commentController.);
+router.post("/crt", commentControllers.createComments
+);
+
+router.post("/update", commentControllers.updateComments
+);
+router.get("/getComments/:id", commentControllers.getComments
+);
 // router.post("/", delete);
 
 

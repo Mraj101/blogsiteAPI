@@ -2,12 +2,18 @@ const mongoose = require("mongoose");
 
 const commentSchema = new mongoose.Schema(
   {
-    comments: {
-        type: String,
-        required: true,
-        lowercase: true,
-        index: true
+    blogId:{
+      type:mongoose.Types.ObjectId,
+      ref:'Blogs',
+      required:true,
     },
+    comment: {
+        type: String,
+        required: true
+    },
+    replies:[{
+      type:String,
+    }]
   },
   {
     timestamps: true,
