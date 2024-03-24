@@ -4,6 +4,7 @@ const userModels = require("../../../models/user.models.js");
 const { ApiError } = require("../../../utils/ApiError.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { uploadOnCloudinary } = require("../../../utils/cloudinary.js");
 
 //declaring global options
 const options = {
@@ -11,10 +12,13 @@ const options = {
   secure: true,
 };
 
+
+
 //sigup user services
 async function create(data) {
   try {
-    const { username, email, fullName, password } = data;
+    console.log(data.file,"inside user create service")
+    const { username, email, fullName, password } = data.body;
     // console.log(username, email, fullName, password, "data adsf");
     //checking if the feilds are empty
     if (
@@ -36,19 +40,20 @@ async function create(data) {
 
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
-
+    const imgOnCloudinary = await uploadOnCloudinary(data.file.path)
     const user = await userModels.create({
       fullName,
       email,
       password: hash,
       username: username.toLowerCase(),
+      img:imgOnCloudinary.url,
     });
 
     if (!user) {
       throw new ApiError(500, "could not create user");
     }
 
-    // console.log(user,"user we have saved");
+    console.log(user,"user we have saved");
 
     // console.log('before encrypting payload')
 
@@ -59,10 +64,11 @@ async function create(data) {
     // console.log(payLoad, "pay");
     return payLoad;
   } catch (err) {
+    console.log(err);
     if (err instanceof ApiError) {
-      throw err; // Re-throw the ApiError
+      throw err;
     } else {
-      throw new ApiError(500, "Service not available");
+      throw new ApiError(500, "user create Service not available");
     }
   }
 }
@@ -132,6 +138,7 @@ async function login(data) {
   }
 }
 
+
 async function logout(req, res) {
   try {
     // console.log("hello logout");
@@ -160,6 +167,8 @@ async function logout(req, res) {
     }
   }
 }
+
+
 
 async function tokenRefresh(req) {
   // console.log(" inside refresh service ");

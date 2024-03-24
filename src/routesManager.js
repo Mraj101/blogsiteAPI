@@ -4,6 +4,7 @@ const commentRoutes = require('./routes/comments/index.js')
 const ratingRoutes = require('./routes/ratings/index.js')
 const {app} = require('./app.js')
 
+
 module.exports = function(){
     app.use('/api/v1/newuser',userRoutes);
     app.use('/api/v1/blogs',blogRoutes);

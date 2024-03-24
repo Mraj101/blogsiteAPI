@@ -5,11 +5,11 @@ const { ApiResponse } = require("../utils/ApiResponse");
 
 async function verifyJWT(req, _, next) {
   try {
-    // console.log(req,'hi i am here middle ware')
+    console.log(req,'hi i am here middle ware')
 
     const token =
       req.cookies?.accessToken || req.header("Authorization")?.split(" ")[1];
-    // console.log(token, "token?");
+    console.log(token, "token?");
     if (!token) {
       //   return {
       //     data: null,

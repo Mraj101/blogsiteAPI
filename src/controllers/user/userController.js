@@ -16,9 +16,9 @@ const cookieParser = require("cookie-parser");
 
 async function createUser(req, res) {
   try {
-    // console.log("Controller", req.body);
+    // console.log("Controller create user", req.body);
     // console.log("hello");
-    let response = await userServices.create(req.body);
+    let response = await userServices.create(req);
     return res
       .status(201)
       .json(new ApiResponse(200, response, "User registered Successfully"));
@@ -73,11 +73,9 @@ async function loginUser(req, res) {
 
 
 
-
-// abcdefghijklmnopqrstuvwxyz
 async function logoutUser(req, res) {
   try {
-    // console.log("Controller",req)
+    console.log("Controller user logout ")
     let response = await userServices.logout(req);
     // console.log("logout service response in controller",response)
     return res
@@ -99,6 +97,7 @@ async function logoutUser(req, res) {
     }
   }
 }
+
 
 async function refreshAccessToken(req, res) {
   try {
@@ -146,5 +145,6 @@ async function changeCurrentPassword(req, res) {
       );
   }
 }
+
 
 module.exports = { createUser, loginUser, logoutUser, refreshAccessToken, changeCurrentPassword };

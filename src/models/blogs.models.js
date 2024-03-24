@@ -15,13 +15,12 @@ const blogSchema = new mongoose.Schema(
     img:{
       type: String,
       required:true,
-    }
-
-    // user: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "User", 
-    //     required: true,
-    //   },
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User", 
+        required: true,
+      },
     // replies: [
     //   {
     //     type: mongoose.Schema.Types.ObjectId,
