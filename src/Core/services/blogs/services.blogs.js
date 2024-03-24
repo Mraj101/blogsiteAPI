@@ -21,7 +21,7 @@ async function create(data) {
 
     const userInstance = await userModels.findById(data.body.user)
 
-    console.log(userInstance,"userinstance");
+    // console.log(userInstance,"userinstance");
 
     const blogCreated = {
       username:userInstance.username,
@@ -61,7 +61,7 @@ async function getAll() {
       if(user){
         return {
           ...singleBlog,
-          userImg:user.img,
+          userImage:user.img,
           userName:user.username,
         }
       }
@@ -89,8 +89,8 @@ async function get(data) {
     const blogUser = await userModels.findById(userId).lean();
 
 
-    console.log("all blogs",allBlogs);
-    console.log("blog user",blogUser);
+    // console.log("all blogs",allBlogs);
+    // console.log("blog user",blogUser);
    
     const modifiedBLogs = allBlogs.map((singleBlog,index)=>{
       return {
@@ -105,7 +105,7 @@ async function get(data) {
             ...singleBlog,
       }
     })
-    console.log(modifiedBLogs)
+    // console.log(modifiedBLogs)
     
     return modifiedBLogs;
   } catch (error) {

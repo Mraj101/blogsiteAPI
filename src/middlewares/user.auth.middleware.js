@@ -5,10 +5,10 @@ const { ApiResponse } = require("../utils/ApiResponse");
 
 async function verifyJWT(req, _, next) {
   try {
-    console.log(req,'hi i am here middle ware')
+    console.log(req, "hi i am here middle ware verifying jwt");
 
     const token =
-      req.cookies?.accessToken || req.header("Authorization")?.split(" ")[1];
+      req.cookies?.accessToken || req.headers("Authorization")?.split(" ")[1];
     console.log(token, "token?");
     if (!token) {
       //   return {
@@ -22,9 +22,12 @@ async function verifyJWT(req, _, next) {
     // console.log('hi verify jwt');
     // console.log("hi",process.env.ACCESS_TOKEN_SECRET);
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    console.log(decoded,"decoded things");
+    console.log(decoded, "decoded things");
 
-    const user = await userModels.findById(decoded._id).select("-password -refreshToken").lean();
+    const user = await userModels
+      .findById(decoded._id)
+      .select("-password -refreshToken")
+      .lean();
     console.log(user, "par kar pita");
     if (!user) {
       throw new ApiError(404, "no user was found while verifying jwt token");
@@ -34,7 +37,7 @@ async function verifyJWT(req, _, next) {
       //     error: true,
       //   };
     }
-    req.user = {...user};
+    req.user = { ...user };
     next();
     //writing a comment when in am initiating and engaging in code :)
   } catch (error) {
