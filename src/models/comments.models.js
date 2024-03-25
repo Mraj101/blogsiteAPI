@@ -10,10 +10,7 @@ const commentSchema = new mongoose.Schema(
     comment: {
         type: String,
         required: true
-    },
-    replies:[{
-      type:String,
-    }]
+    }
   },
   {
     timestamps: true,
