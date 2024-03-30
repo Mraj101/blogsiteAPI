@@ -3,7 +3,7 @@ const userServices = require("../../Core/services/user/user.js");
 const cookie = require("cookie-parser");
 const { ApiResponse } = require("../../utils/ApiResponse.js");
 const { ApiError } = require("../../utils/ApiError.js");
-const cookieParser = require("cookie-parser");
+
 
 // const createErrorMessage = () => {
 //   return {
@@ -75,7 +75,7 @@ async function loginUser(req, res) {
 
 async function logoutUser(req, res) {
   try {
-    console.log("Controller user logout ")
+    console.log("Controller user logout ");
     let response = await userServices.logout(req);
     // console.log("logout service response in controller",response)
     return res

@@ -4,12 +4,13 @@ const countSchema = new mongoose.Schema(
   {
     blogId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Blog",
+      ref: "Blogs",
       required: true,
     },
     count: {
       type: Number,
       default: 0,
+      required:true,
     },
   },
   {

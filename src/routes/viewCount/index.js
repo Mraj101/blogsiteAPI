@@ -1,10 +1,7 @@
-const express = require('express')
-const router=express.Router();
-const viewController =require('../../controllers/viewCounts/index.js');
+const express = require("express");
+const router = express.Router();
+const viewController = require("../../controllers/viewCounts/index.js");
+router.get("/getAll", viewController.getCounts);
+router.post("/update/:id", viewController.updateCount);
 
-
-
-router.post("/update",viewController.updateCount);
-
-
-module.exports = router
+module.exports = router;

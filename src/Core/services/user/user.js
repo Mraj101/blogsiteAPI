@@ -141,7 +141,7 @@ async function login(data) {
 
 async function logout(req, res) {
   try {
-    // console.log("hello logout");
+    console.log("hello logout");
     // console.log("hi req.user",req.user);
     const user = await userModels.findByIdAndUpdate(
       req.user._id,
@@ -160,6 +160,7 @@ async function logout(req, res) {
     return { options };
     // console.log(token,'token var in logout service');
   } catch (error) {
+    console.log(error)
     if (error instanceof ApiError) {
       throw error;
     } else {
