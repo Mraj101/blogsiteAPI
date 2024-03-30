@@ -1,6 +1,7 @@
 const { ApiError } = require("../../../utils/ApiError");
 const countModels = require("../../../models/count.models");
 const mongoose = require("mongoose");
+const blogsModels = require("../../../models/blogs.models");
 
 async function update(data) {
   try {
@@ -55,19 +56,31 @@ async function update(data) {
   }
 }
 
-
 async function get(data) {
   try {
-  //  console.log("hi get pop blog views")
-  const allViews = await countModels.find({});
-  const pop = allViews.sort((a,b)=>b.count-a.count);
-  console.log(pop,"pop");
-  
-  // console.log(allViews[0].hasOwnProperty('count'),"counts")
-  // console.log(allViews[0].count,"countval")
+    const allViews = await countModels.find({}).lean();
 
-// console.log(popular, "populars");
-   return pop
+    const allBLogs = await blogsModels.find({}).lean();
+
+    let modifiedViews = allBLogs.map((singleBlog) => {
+      let matched = allViews.find(
+        (singleView) => singleView.blogId.toString() === singleBlog._id.toString()
+      );
+
+      // Create a new object with properties from matched view and additional properties from singleBlog
+      return {
+        ...matched,
+        title: singleBlog.title,
+        content: singleBlog.content,
+        img: singleBlog.img,
+        user: singleBlog.user,
+      };
+    });
+
+    // console.log(modifiedViews, "modified");
+    modifiedViews.sort((a,b)=>b.count-a.count)
+
+    return modifiedViews;
   } catch (error) {
     console.log(error);
     if (error instanceof ApiError) {
@@ -80,4 +93,4 @@ async function get(data) {
 }
 
 
-module.exports = { update,get };
+module.exports = { update, get };
