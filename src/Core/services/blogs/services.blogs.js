@@ -1,4 +1,5 @@
 const blogsModels = require("../../../models/blogs.models");
+const countModels = require("../../../models/count.models");
 const userModels = require("../../../models/user.models");
 const { ApiError } = require("../../../utils/ApiError");
 const { uploadOnCloudinary } = require("../../../utils/cloudinary");
@@ -48,6 +49,7 @@ async function getAll() {
   try {
     const allBlogs = await blogsModels.find({}).lean();
     const allUsers = await userModels.find({}).lean();
+    const allViews = await countModels.find({}).lean();
     // console.log(allBlogs,"allblogs");
     // console.log(allUsers,"allusers");
 
@@ -55,11 +57,15 @@ async function getAll() {
       const user = allUsers.find(
         (singleUser) => singleUser._id.toString() === singleBlog.user.toString()
       );
+      const view = allViews.find(
+        (singleView)=>singleView.blogId.toString()=== singleBlog._id.toString()
+      )
       // console.log(singleBlog.user,"user");
       // console.log(user,"singleUser");
       if (user) {
         return {
           ...singleBlog,
+          count:view.count,
           userImage: user.img,
           userName: user.username,
         };
