@@ -1,4 +1,5 @@
 const commentsModels = require("../../../models/comments.models.js");
+const userModels = require("../../../models/user.models.js");
 const { ApiError } = require("../../../utils/ApiError");
 
 async function create(data) {
@@ -54,10 +55,22 @@ async function update(data) {
 async function getComments(data) {
   try {
     const { id } = data.params; 
-    const commentInstances = await commentsModels.find({ blogId: id });
-    console.log(commentInstances, "comment instances");
-    return commentInstances;
+    const commentInstances = await commentsModels.find({ blogId: id }).lean();
+    const allUsers = await userModels.find({}).lean();
+     const modifiedCommentInstance = commentInstances.map((singleComment)=>{
+      let user = allUsers.find(
+        (singleUser)=>singleUser._id.toString()===singleComment.user.toString())
+        return{
+          ...singleComment,
+          userImg:user.img,
+          userName:user.username,
+        }
+     })
+
+    console.log(modifiedCommentInstance, "comment instances");
+    return modifiedCommentInstance;
   } catch (error) {
+    console.log(error);
     if (error instanceof ApiError) {
       throw error;
     } else {
