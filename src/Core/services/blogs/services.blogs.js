@@ -45,6 +45,7 @@ async function create(data) {
   }
 }
 
+
 async function getAll() {
   try {
     const allBlogs = await blogsModels.find({}).lean();
