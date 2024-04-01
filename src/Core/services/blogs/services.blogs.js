@@ -61,11 +61,11 @@ async function getAll() {
         (singleView)=>singleView.blogId.toString()=== singleBlog._id.toString()
       )
       // console.log(singleBlog.user,"user");
-      // console.log(user,"singleUser");
+      console.log(view,"singleUser");
       if (user) {
         return {
           ...singleBlog,
-          count:view.count,
+          count:view?.count||0,
           userImage: user.img,
           userName: user.username,
         };
@@ -82,6 +82,8 @@ async function getAll() {
     }
   }
 }
+
+
 
 async function get(data) {
   try {

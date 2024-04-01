@@ -4,8 +4,8 @@ const viewServices = require("../../Core/services/viewCount/index.js");
 
 async function updateCount(req, res) {
   try {
-    console.log("Controller", req.body);
-    console.log("hello count");
+    // console.log("Controller", req.body);
+    // console.log("hello count");
     let response = await viewServices.update(req);
     return res
       .status(201)

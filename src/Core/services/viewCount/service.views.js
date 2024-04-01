@@ -2,40 +2,48 @@ const { ApiError } = require("../../../utils/ApiError");
 const countModels = require("../../../models/count.models");
 const mongoose = require("mongoose");
 const blogsModels = require("../../../models/blogs.models");
+const userViewsModels = require("../../../models/userViews.models");
 
 async function update(data) {
   try {
     // console.log(data.body, "views");
+    let { loggedInUser } = data.body;
     let { id } = data.params;
+    // console.log(loggedInUser,"user log in")
     // console.log(id, "data extract");
     const existCountdoc = await countModels.find({ blogId: id });
-
+    const existUserView = await userViewsModels.findById({user:loggedInUser});
     console.log(existCountdoc, "exist count doc");
 
-    if (!existCountdoc.length > 0) {
+    if (!(existCountdoc.length > 0 && existUserView)){
       const viewcountInstance = {
         blogId: id,
+        user: loggedInUser,
         count: 1,
       };
       // console.log(viewcountInstance, "TEST");
       const saved = await countModels.create(viewcountInstance);
+      const userView = await userViewsModels.create({
+        user:loggedInUser,
+        blogId:id,
+      })
       // console.log(saved.count, "Count value");
     } else {
       let countDocMatch = existCountdoc.find((singleDoc) => {
-        console.log(singleDoc, "doc");
-        console.log(id);
         return id === singleDoc.blogId.toString();
       });
       console.log("doc matched", countDocMatch);
       let countVal = parseInt(countDocMatch.count);
       // console.log(countVal, "value of count");
-      const updatedDoc = await countModels.findOneAndUpdate(
-        countDocMatch._id,
-        {
-          $set: { count: countVal + 1 },
-        },
-        { new: true }
-      );
+      if(!existUserView.blogId.toString() === existCountdoc.blogId.toString()){
+        const updatedDoc = await countModels.findOneAndUpdate(
+          countDocMatch._id,
+          {
+            $set: { count: countVal + 1 },
+          },
+          { new: true }
+        );
+      }
 
       // console.log(updatedDoc, "update");
     }
@@ -64,7 +72,8 @@ async function get(data) {
 
     let modifiedViews = allBLogs.map((singleBlog) => {
       let matched = allViews.find(
-        (singleView) => singleView.blogId.toString() === singleBlog._id.toString()
+        (singleView) =>
+          singleView.blogId.toString() === singleBlog._id.toString()
       );
 
       // Create a new object with properties from matched view and additional properties from singleBlog
@@ -78,7 +87,7 @@ async function get(data) {
     });
 
     // console.log(modifiedViews, "modified");
-    modifiedViews.sort((a,b)=>b.count-a.count)
+    modifiedViews.sort((a, b) => b.count - a.count);
 
     return modifiedViews;
   } catch (error) {
@@ -91,6 +100,5 @@ async function get(data) {
     }
   }
 }
-
 
 module.exports = { update, get };
