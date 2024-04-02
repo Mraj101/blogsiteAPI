@@ -6,83 +6,43 @@ const userViewsModels = require("../../../models/userViews.models");
 
 async function update(data) {
   try {
-    // console.log(data.body, "views");
     let { loggedInUser } = data.body;
     let { id } = data.params;
 
-    const existuserView = await userViewsModels.findOne({blogId:id})
-    
-    if(!existuserView){
+ 
+    const existUserView = await userViewsModels.findOne({ user: loggedInUser, blogId: id });
+
+    if (!existUserView) {
       const userView = await userViewsModels.create({
-        blogId:id,
-        user:loggedInUser
-      })
+        blogId: id,
+        user: loggedInUser
+      });
 
-      const count = await countModels.create(
-        {
-            blogId: id,
-            user: loggedInUser,
-            count: 1,
-            userview:userView?._id,
-        }
-      );
+      let count = await countModels.findOne({ blogId: id });
+
+      if (!count) {
+        count = await countModels.create({
+          blogId: id,
+          count: 1,
+          userview: userView._id 
+        });
+      } else {
+        count.count += 1;
+      }
+      await count.save();
     }
-
-  
-   
-    // const existCountdoc = await countModels.find({ blogId: id });
-    // const existUserView = await userViewsModels.findOne({user:loggedInUser});
-    // console.log(existCountdoc, "exist count doc");
-    // console.log(existUserView, "exist userview doc");
-
-    // if (!(existCountdoc.length > 0 && existUserView)){
-    //   const viewcountInstance = {
-    //     blogId: id,
-    //     user: loggedInUser,
-    //     count: 1,
-    //   };
-    //   // console.log(viewcountInstance, "TEST");
-    //   const saved = await countModels.create(viewcountInstance);
-    //   const userView = await userViewsModels.create({
-    //     user:loggedInUser,
-    //     blogId:id,
-    //   })
-    //   // console.log(saved.count, "Count value");
-    // } else {
-    //   let countDocMatch = existCountdoc.find((singleDoc) => {
-    //     return id === singleDoc.blogId.toString();
-    //   });
-    //   console.log("doc matched", countDocMatch);
-    //   let countVal = parseInt(countDocMatch.count);
-    //   // console.log(countVal, "value of count");
-    //   if(!existUserView.blogId.toString() === countDocMatch.blogId.toString()){
-    //     const updatedDoc = await countModels.findOneAndUpdate(
-    //       countDocMatch._id,
-    //       {
-    //         $set: { count: countVal + 1 },
-    //       },
-    //       { new: true }
-    //     );
-    //   }
-
-    //   // console.log(updatedDoc, "update");
-    // }
-
-    // const createdCountview = {
-    //   count: viewcountInstance.count,
-    // };
 
     return {};
   } catch (error) {
-    console.log(error);
+    console.error(error);
     if (error instanceof ApiError) {
       throw error;
     } else {
-      console.log(error);
       throw new ApiError(500, "count view service error");
     }
   }
 }
+
 
 async function get(data) {
   try {
