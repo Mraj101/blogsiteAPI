@@ -32,8 +32,7 @@ async function update(data) {
     const { id } = data.params;
     console.log(id,'id')
     const objectData = data.body;
-    // delete objectData._id;
-    console.log(objectData[0], 'obj data')
+    
     const commentInstance = await commentsModels.findByIdAndUpdate(id, objectData[0], { new: true });
     console.log(commentInstance,'intnc');
 
