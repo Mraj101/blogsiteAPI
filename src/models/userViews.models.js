@@ -7,15 +7,20 @@ const userViewsSchema = new mongoose.Schema(
       ref: "Blogs",
       required: true,
     },
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref:"Users",
-        required:true,
-    },
+    // user: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref:"Users",
+    //     required:true,
+    // },
+    isCounted:{
+      type:Boolean,
+      required:true,
+    }
   },
   {
     timestamps: true,
   }
 );
+
 
 module.exports = mongoose.model("UserViews", userViewsSchema);
