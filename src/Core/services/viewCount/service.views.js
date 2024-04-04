@@ -9,29 +9,24 @@ async function update(data) {
     let { loggedInUser } = data.body;
     let { id } = data.params;
 
- 
-    const existUserView = await userViewsModels.findOne({ user: loggedInUser, blogId: id });
+    let userView = await userViewsModels.create({
+      blogId: id,
+      isCounted: false,
+    });
 
-    if (!existUserView) {
-      const userView = await userViewsModels.create({
+    let count = await countModels.findOne({ blogId: id });
+
+    if (!count) {
+      count = await countModels.create({
         blogId: id,
-        user: loggedInUser
+        count: 1,
+        userview: userView._id,
       });
-
-      let count = await countModels.findOne({ blogId: id });
-
-      if (!count) {
-        count = await countModels.create({
-          blogId: id,
-          count: 1,
-          userview: userView._id 
-        });
-      } else {
-        count.count += 1;
-      }
-      await count.save();
+      console.log(count);
+    } else {
+      count.count += 1;
     }
-
+    await count.save();
     return {};
   } catch (error) {
     console.error(error);
@@ -43,20 +38,18 @@ async function update(data) {
   }
 }
 
-
 async function get(data) {
   try {
-    const allViews = await countModels.find({}).lean();
+    const allCounts = await countModels.find({}).lean();
 
     const allBLogs = await blogsModels.find({}).lean();
 
     let modifiedViews = allBLogs.map((singleBlog) => {
-      let matched = allViews.find(
-        (singleView) =>
-          singleView.blogId.toString() === singleBlog._id.toString()
+      let matched = allCounts.find(
+        (singleCount) =>
+          singleCount.blogId.toString() === singleBlog._id.toString()
       );
 
-      // Create a new object with properties from matched view and additional properties from singleBlog
       return {
         ...matched,
         title: singleBlog.title,
