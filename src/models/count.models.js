@@ -12,11 +12,6 @@ const countSchema = new mongoose.Schema(
       default: 0,
       required:true,
     },
-    userview:{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "UserViews",
-      required: true,
-    }
   },
   {
     timestamps: true,

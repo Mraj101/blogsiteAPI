@@ -9,7 +9,7 @@ async function update(data) {
     let { loggedInUser } = data.body;
     let { id } = data.params;
 
-    let userView = await userViewsModels.create({
+    let userViews = await userViewsModels.create({
       blogId: id,
       isCounted: false,
     });
@@ -20,13 +20,21 @@ async function update(data) {
       count = await countModels.create({
         blogId: id,
         count: 1,
-        userview: userView._id,
       });
-      console.log(count);
-    } else {
-      count.count += 1;
     }
+
+    let fetchedView = await userViewsModels.find({
+      blogId: id,
+      isCounted: false,
+    });
+    count.count += fetchedView.length;
+
     await count.save();
+    await userViewsModels.updateMany(
+      { isCounted: false },
+      { $set: { isCounted: true } }
+    );
+
     return {};
   } catch (error) {
     console.error(error);
